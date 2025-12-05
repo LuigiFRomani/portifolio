@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>{% if action == 'edit' %}Editar{% else %}Criar{% endif %} Post</h2>
+  {% if post %}
+    <h2>Editar Post</h2>
+  {% else %}
+    <h2>Criar novo Post</h2>
+  {% endif %}
+  
   <form method="post">
     {% csrf_token %}
     {% if form %}
@@ -16,6 +21,12 @@
       </p>
     {% endif %}
     <button type="submit">Salvar</button>
+    <a href="{% url 'post_list' %}">Cancelar</a>
   </form>
-  <a href="{% url 'post_list' %}">Cancelar</a>
+
+  {% if post %}
+    <hr>
+    <h3>Perigo</h3>
+    <p><a href="{% url 'post_delete' post.slug %}" style="color: red;">Remover este post</a></p>
+  {% endif %}
 {% endblock %}
