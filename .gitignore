@@ -1,5 +1,36 @@
-db.sqlite3
-portifolio/__pycache__/
-blog/migrations/__pycache__/
+# Byte-compiled / Python artifacts
 __pycache__/
-blog/__pycache__
+*.py[cod]
+*$py.class
+
+# Django DB
+db.sqlite3
+
+# Environments
+.venv/
+venv/
+.env
+.env.*
+
+# Staticfiles collected (NÃO commit - será gerado em produção)
+/staticfiles/
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+
+# Test / cache
+.pytest_cache/
+.coverage

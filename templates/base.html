@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Meu Blog</title>
+  <title>Blog Do Luigi</title>
   <style>
     header { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
     nav { font-size: 0.95rem; display:flex; gap:1rem; align-items:center; }
@@ -14,7 +14,7 @@
 </head>
 <body>
   <header>
-    <h1><a href="{% url 'post_list' %}">Meu Blog</a></h1>
+    <h1><a href="{% url 'post_list' %}">Blog Do Luigi</a></h1>
     <nav>
       <a href="{% url 'category_list' %}">Categorias</a>
       {% if user.is_authenticated %}
