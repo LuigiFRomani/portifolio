@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
 
-from .models import Post, Comment
+from .models import Post, Comment, Category
 from .forms import PostForm, CommentForm
 
 class StaffRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -69,4 +69,27 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['post'] = get_object_or_404(Post, slug=self.kwargs['slug'])
+        return context
+    
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'blog/category_list.html'
+    context_object_name = 'categories'
+    ordering = ['name']
+
+class CategoryDetailView(DetailView):
+    model = Category
+    template_name = 'blog/post_list.html'  # reutiliza o template de listagem de posts
+    context_object_name = 'category'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+
+    def get_context_data(self, **kwargs):
+        # let DetailView get the category object into self.object
+        context = super().get_context_data(**kwargs)
+        category = self.object
+        # posts relacionados ordenados do mais recente
+        context['posts'] = category.posts.order_by('-posted_at')
+        # adiciona a categoria ao contexto (post_list.html espera 'category' quando usado como detail)
+        context['category'] = category
         return context

@@ -19,14 +19,27 @@
         <label>Conteúdo (HTML)</label><br>
         <textarea name="content" rows="10">{% if post %}{{ post.content }}{% endif %}</textarea>
       </p>
+      <!-- categorias apenas no caso sem form -->
+      <p>
+        <label>Categorias</label><br>
+        <select name="categories" multiple>
+          {% for cat in categories %}
+            <option value="{{ cat.pk }}" {% if post and cat in post.categories.all %}selected{% endif %}>
+              {{ cat.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </p>
     {% endif %}
     <button type="submit">Salvar</button>
     <a href="{% url 'post_list' %}">Cancelar</a>
   </form>
 
-  {% if post %}
-    <hr>
-    <h3>Perigo</h3>
-    <p><a href="{% url 'post_delete' post.slug %}" style="color: red;">Remover este post</a></p>
+  {% if post and user.is_authenticated %}
+    {% if user.is_staff or user.is_superuser %}
+      <hr>
+      <h3>Perigo</h3>
+      <p><a href="{% url 'post_delete' post.slug %}" style="color: red;">Remover este post</a></p>
+    {% endif %}
   {% endif %}
 {% endblock %}
