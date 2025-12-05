@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+  <a href="{% url 'post_create' %}">Criar novo post</a>
+  <ul>
+    {% for post in posts %}
+      <li>
+        <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+        <small>{{ post.posted_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+      </li>
+    {% empty %}
+      <li>Nenhum post</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
