@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post
-from django.utils import timezone
+from .forms import PostForm
 
 def post_list(request):
     posts = Post.objects.order_by('-posted_at')
@@ -12,20 +12,24 @@ def post_detail(request, pk):
 
 def post_create(request):
     if request.method == 'POST':
-        title = request.POST.get('title','')
-        content = request.POST.get('content','')
-        post = Post.objects.create(title=title, content=content, posted_at=timezone.now())
-        return redirect('post_detail', pk=post.pk)
-    return render(request, 'blog/post_form.html', {'action': 'create'})
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save()
+            return redirect('post_detail', pk=post.pk)
+    else:
+        form = PostForm()
+    return render(request, 'blog/post_form.html', {'form': form, 'action': 'create'})
 
 def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == 'POST':
-        post.title = request.POST.get('title','')
-        post.content = request.POST.get('content','')
-        post.save()
-        return redirect('post_detail', pk=post.pk)
-    return render(request, 'blog/post_form.html', {'post': post, 'action': 'edit'})
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            post = form.save()
+            return redirect('post_detail', pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'blog/post_form.html', {'form': form, 'post': post, 'action': 'edit'})
 
 def post_delete(request, pk):
     post = get_object_or_404(Post, pk=pk)
