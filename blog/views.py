@@ -1,7 +1,18 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post
-from .forms import PostForm
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import get_object_or_404, redirect
+
+from .models import Post, Comment
+from .forms import PostForm, CommentForm
+
+class StaffRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    login_url = '/accounts/login/'
+    raise_exception = True  # se o usuário estiver logado mas sem permissão, retorna 403
+    def test_func(self):
+        user = getattr(self.request, "user", None)
+        return bool(user and (user.is_staff or user.is_superuser))
+
 
 class PostListView(ListView):
     model = Post
@@ -16,21 +27,46 @@ class PostDetailView(DetailView):
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
 
-class PostCreateView(CreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comments.all()
+        context['comment_form'] = CommentForm()
+        return context
+
+class PostCreateView(StaffRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_form.html'
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(StaffRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_form.html'
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
 
-class PostDeleteView(DeleteView):
+class PostDeleteView(StaffRequiredMixin, DeleteView):
     model = Post
     template_name = 'blog/post_confirm_delete.html'
     success_url = reverse_lazy('post_list')
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+    login_url = '/accounts/login/'  # opcional, por padrão usa settings.LOGIN_URL
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.author = self.request.user
+        post_slug = self.kwargs['slug']
+        self.object.post = get_object_or_404(Post, slug=post_slug)
+        self.object.save()
+        return redirect('post_detail', slug=post_slug)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post'] = get_object_or_404(Post, slug=self.kwargs['slug'])
+        return context
