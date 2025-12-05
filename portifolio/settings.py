@@ -121,3 +121,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# redireciona ao listar posts após login, quando não houver ?next=
+LOGIN_REDIRECT_URL = '/'
+# ou para usar o nome da url já definida:
+# LOGIN_REDIRECT_URL = '/'
+
+# opcional: URL padrão de logout (após logout)
+LOGOUT_REDIRECT_URL = '/'
