@@ -1,0 +1,9 @@
+services:
+  
+  - type: web
+    name: portifolio-web
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: |
+      bash -c "python manage.py render_migrate && gunicorn portifolio.wsgi"
