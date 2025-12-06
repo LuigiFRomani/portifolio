@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-&5be45zuxa-0osmu_t=khd5b*&j(zd)6u65^=8wu4#$_=-8($q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['portifolio-vpsx.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
